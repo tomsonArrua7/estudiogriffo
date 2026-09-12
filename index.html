@@ -91,7 +91,7 @@
   .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:80px;align-items:center;position:relative;z-index:1}
   .hero .etiqueta{color:var(--arena)}
   .hero h1{font-size:clamp(2.4rem,4.6vw,3.7rem);margin:24px 0 26px;letter-spacing:-.01em}
-  .hero h1 span{color:var(--arena)}
+  .hero h1 .dest{color:var(--arena)}
   .hero-lead{font-size:1.08rem;color:rgba(255,255,255,.76);max-width:520px}
   .hero-acciones{display:flex;flex-wrap:wrap;gap:12px;margin-top:40px}
   .hero-zona{display:flex;align-items:center;gap:12px;margin-top:44px;padding-top:26px;border-top:1px solid rgba(217,187,169,.18);font-size:.88rem;color:rgba(255,255,255,.66)}
@@ -270,6 +270,103 @@
   .wsp-menu a + a{border-top:1px solid var(--arena-linea)}
   .wsp-menu a:hover{background:var(--arena-fondo)}
 
+  /* ===== Movimiento ===== */
+  :root{--intro:1.5s;--ease:cubic-bezier(.2,.7,.2,1)}
+  .sin-intro{--intro:0s}
+
+  /* Barra de progreso de lectura */
+  .progreso{position:fixed;top:0;left:0;right:0;height:3px;z-index:80;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--violeta),var(--purpura),var(--orquidea),var(--marron))}
+
+  /* Cortina de entrada */
+  .intro{position:fixed;inset:0;z-index:100;background:var(--noche-2);display:grid;place-items:center;pointer-events:none;animation:cortina .9s var(--ease) 1.1s forwards}
+  .intro-marca{display:flex;flex-direction:column;align-items:center;gap:18px;animation:introMarca 1s var(--ease) both}
+  .intro .logo-marca{width:64px;height:64px}
+  .intro .logo-marca span{font-size:1.1rem}
+  .intro strong{font-family:var(--serif);font-weight:400;color:#fff;font-size:1.5rem;letter-spacing:.06em}
+  .intro-linea{width:140px;height:1px;background:rgba(217,187,169,.2);overflow:hidden}
+  .intro-linea::after{content:"";display:block;height:100%;background:var(--arena);transform-origin:0 50%;animation:linea 1s var(--ease) .1s both}
+  .sin-intro .intro{display:none}
+  @keyframes cortina{to{transform:translateY(-100%)}}
+  @keyframes introMarca{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes linea{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+  /* Entrada del inicio */
+  @keyframes subir{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+  @keyframes aparecerForm{from{opacity:0;transform:translateY(44px) scale(.98)}to{opacity:1;transform:none}}
+  @keyframes palabra{from{transform:translateY(115%)}to{transform:none}}
+  @keyframes bloque{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  .entra{animation:subir 1s var(--ease) both;animation-delay:calc(var(--intro) + var(--d,0s))}
+  .consulta.entra{animation-name:aparecerForm;animation-duration:1.2s}
+  .hero h1 .pl{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.14em;margin-bottom:-.14em}
+  .hero h1 .pl > span{display:inline-block;animation:palabra 1.05s var(--ease) both;animation-delay:calc(var(--intro) + .15s + var(--d,0s))}
+  .hero-bloque{transform-origin:100% 50%;animation:bloque 1.4s var(--ease) both;animation-delay:calc(var(--intro) - .25s)}
+
+  /* Balanza que se dibuja y se balancea */
+  .hero .hero-balanza{opacity:.2}
+  .dibujo circle,.dibujo path{stroke-dasharray:900;stroke-dashoffset:900;animation:trazar 3.4s cubic-bezier(.6,.1,.3,1) forwards;animation-delay:calc(var(--intro) + .3s)}
+  .dibujo .brazo{transform-box:view-box;transform-origin:200px 108px;animation:balanceo 7s ease-in-out infinite;animation-delay:calc(var(--intro) + 3.6s)}
+  @keyframes trazar{to{stroke-dashoffset:0}}
+  @keyframes balanceo{0%,100%{transform:rotate(0)}25%{transform:rotate(1.8deg)}75%{transform:rotate(-1.8deg)}}
+
+  /* Aparición al hacer scroll */
+  .js [data-reveal]{opacity:0;transform:translateY(34px);transition:opacity .9s var(--ease),transform .9s var(--ease);transition-delay:var(--d,0s)}
+  .js [data-reveal="izq"]{transform:translateX(-44px)}
+  .js [data-reveal="der"]{transform:translateX(44px)}
+  .js [data-reveal="escala"]{transform:translateY(40px) scale(.97)}
+  .js [data-reveal].visible{opacity:1;transform:none}
+  .js [data-reveal] .etiqueta::before,.js .etiqueta[data-reveal]::before{width:0;transition:width 1s var(--ease) .35s}
+  .js .visible .etiqueta::before,.js .etiqueta.visible::before{width:32px}
+
+  /* Pasos: la línea se traza y los rombos giran */
+  .js .pasos::before{transform:scaleX(0);transform-origin:0 50%;transition:transform 1.8s var(--ease) .2s}
+  .js .pasos.en-vista::before{transform:scaleX(1)}
+  .paso-num{transition:transform 1s var(--ease),background .3s}
+  .js .paso:not(.visible) .paso-num{transform:rotate(-45deg) scale(.5)}
+  .paso:hover .paso-num{transform:rotate(225deg)}
+
+  /* Tarjetas de temas escalonadas al cambiar de área */
+  .panel.activo .tema{animation:subir .6s var(--ease) both;animation-delay:calc(var(--i,0) * 45ms)}
+
+  /* Microinteracciones */
+  .btn{position:relative;overflow:hidden}
+  .btn-arena::after,.btn-violeta::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.38),transparent);transform:skewX(-20deg);transition:left .8s var(--ease);pointer-events:none}
+  .btn-arena:hover::after,.btn-violeta:hover::after{left:130%}
+  .indice-sup svg{transition:transform .4s var(--ease)}
+  .indice-item:hover .indice-sup svg{transform:translateY(-4px)}
+  .indice-item p svg{transition:transform .3s var(--ease)}
+  .indice-item:hover p svg{transform:translateX(5px)}
+  .estudio-foto svg{transition:transform 1.2s var(--ease)}
+  .estudio-visual:hover .estudio-foto svg{transform:translate(-50%,-50%) scale(1.06)}
+  .nav-links a.activo{color:var(--tinta)}
+  .nav-links a.activo::after{width:100%}
+
+  /* Cinta de áreas en movimiento */
+  .cinta{background:var(--noche);padding:34px 0;overflow:hidden;border-bottom:1px solid rgba(217,187,169,.12)}
+  .cinta-pista{display:flex;width:max-content;animation:cinta 42s linear infinite}
+  .cinta:hover .cinta-pista{animation-play-state:paused}
+  .cinta-grupo{display:flex;align-items:center;gap:48px;padding-right:48px}
+  .cinta span{font-family:var(--serif);font-size:clamp(1.6rem,3vw,2.6rem);line-height:1.2;white-space:nowrap;color:var(--arena)}
+  .cinta span.hueco{color:transparent;-webkit-text-stroke:1px rgba(217,187,169,.6)}
+  .cinta i{width:10px;height:10px;border:1px solid var(--orquidea);transform:rotate(45deg);flex-shrink:0}
+  @keyframes cinta{to{transform:translateX(-50%)}}
+
+  /* WhatsApp flotante: se oculta si hay números a la vista */
+  .wsp-fijo{transition:background .2s,opacity .5s var(--ease),transform .5s var(--ease)}
+  .wsp-fijo.oculto{opacity:0;transform:translateY(24px) scale(.6);pointer-events:none}
+  .wsp-fijo::before{content:"";position:absolute;inset:-1px;border-radius:50%;border:1px solid var(--arena);animation:pulso 3s ease-out infinite;pointer-events:none}
+  .wsp-fijo.oculto::before{animation:none;opacity:0}
+  @keyframes pulso{0%{transform:scale(1);opacity:.8}70%,100%{transform:scale(1.65);opacity:0}}
+  .wsp-aviso{position:fixed;right:92px;bottom:31px;z-index:60;background:#fff;color:var(--tinta);font-size:.86rem;padding:10px 16px;border-left:3px solid var(--orquidea);box-shadow:0 14px 30px -12px rgba(31,14,48,.45);white-space:nowrap;opacity:0;transform:translateX(14px);pointer-events:none;transition:opacity .45s var(--ease),transform .45s var(--ease)}
+  .wsp-aviso strong{color:var(--violeta);font-weight:600}
+  .wsp-aviso.mostrar{opacity:1;transform:none}
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation-duration:.01ms !important;animation-delay:0s !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;transition-delay:0s !important}
+    .intro{display:none}
+    .js [data-reveal]{opacity:1;transform:none}
+  }
+
   /* ===== Responsive ===== */
   @media (max-width: 1020px){
     .hero-grid,.estudio-grid,.contacto-grid{grid-template-columns:1fr;gap:56px}
@@ -336,8 +433,24 @@
     .footer-grid{grid-template-columns:1fr;gap:36px}
   }
 </style>
+<script>
+  document.documentElement.classList.add("js");
+  try {
+    if (sessionStorage.getItem("introVista")) document.documentElement.classList.add("sin-intro");
+    else sessionStorage.setItem("introVista", "1");
+  } catch (e) {}
+</script>
 </head>
 <body>
+
+<div class="progreso" id="progreso" aria-hidden="true"></div>
+<div class="intro" aria-hidden="true">
+  <div class="intro-marca">
+    <div class="logo-marca"><span>G&amp;A</span></div>
+    <strong>Griffo &amp; Asociados</strong>
+    <div class="intro-linea"></div>
+  </div>
+</div>
 
 <!-- ===== Íconos ===== -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -392,22 +505,31 @@
 <section class="hero" id="inicio">
   <div class="hero-bloque"></div>
   <div class="hero-lineas" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-  <svg class="hero-balanza" aria-hidden="true"><use href="#balanza"/></svg>
+  <svg class="hero-balanza dibujo" viewBox="0 0 400 400" aria-hidden="true">
+    <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="200" cy="52" r="10"/><path d="M200 62v268"/><path d="M190 330h20l18 22H172z"/><path d="M140 360h120"/><path d="M185 150h30M180 190h40M175 240h50"/>
+      <g class="brazo">
+        <path d="M60 108h280M200 108l-12-18M200 108l12-18"/>
+        <path d="M60 108 20 228M60 108l40 120M10 228h100c0 26-22 44-50 44s-50-18-50-44z"/>
+        <path d="M340 108 300 228M340 108l40 120M290 228h100c0 26-22 44-50 44s-50-18-50-44z"/>
+      </g>
+    </g>
+  </svg>
 
   <div class="contenedor hero-grid">
     <div>
-      <span class="etiqueta">Estudio Jurídico Integral · La Plata</span>
-      <h1>Asesoramiento legal con <span>compromiso, claridad</span> y dedicación.</h1>
-      <p class="hero-lead">Somos un equipo de abogadas que acompaña a cada cliente de forma personalizada, en asuntos de familia, civiles, laborales y penales.</p>
-      <div class="hero-acciones">
+      <span class="etiqueta entra">Estudio Jurídico Integral · La Plata</span>
+      <h1><span class="pl"><span style="--d:0s">Asesoramiento</span></span> <span class="pl"><span style="--d:.07s">legal</span></span> <span class="pl"><span style="--d:.14s">con</span></span> <span class="pl dest"><span style="--d:.21s">compromiso,</span></span> <span class="pl dest"><span style="--d:.28s">claridad</span></span> <span class="pl"><span style="--d:.35s">y</span></span> <span class="pl"><span style="--d:.42s">dedicación.</span></span></h1>
+      <p class="hero-lead entra" style="--d:.55s">Somos un equipo de abogadas que acompaña a cada cliente de forma personalizada, en asuntos de familia, civiles, laborales y penales.</p>
+      <div class="hero-acciones entra" style="--d:.7s">
         <a class="btn btn-arena" href="https://wa.me/5492215609064?text=Hola%2C%20quisiera%20realizar%20una%20consulta." target="_blank" rel="noopener"><svg class="i"><use href="#i-wsp"/></svg>WhatsApp 221 560-9064</a>
         <a class="btn btn-linea" href="https://wa.me/5492215989986?text=Hola%2C%20quisiera%20realizar%20una%20consulta." target="_blank" rel="noopener"><svg class="i"><use href="#i-wsp"/></svg>WhatsApp 221 598-9986</a>
       </div>
-      <p class="hero-horarios"><span><svg><use href="#i-reloj"/></svg>221 560-9064: todos los días, cualquier horario</span><span><svg><use href="#i-reloj"/></svg>221 598-9986: lunes a viernes de 8 a 16 h</span></p>
-      <div class="hero-zona"><svg class="i"><use href="#i-pin"/></svg>Atención en La Plata, Berisso y Ensenada. Otras localidades de la Provincia de Buenos Aires, a consultar.</div>
+      <p class="hero-horarios entra" style="--d:.8s"><span><svg><use href="#i-reloj"/></svg>221 560-9064: todos los días, cualquier horario</span><span><svg><use href="#i-reloj"/></svg>221 598-9986: lunes a viernes de 8 a 16 h</span></p>
+      <div class="hero-zona entra" style="--d:.9s"><svg class="i"><use href="#i-pin"/></svg>Atención en La Plata, Berisso y Ensenada. Otras localidades de la Provincia de Buenos Aires, a consultar.</div>
     </div>
 
-    <form class="consulta" id="consulta" novalidate>
+    <form class="consulta entra" id="consulta" style="--d:.45s" novalidate>
       <div class="consulta-cab">
         <small>Respuesta a la brevedad</small>
         <h2>Solicitar consulta</h2>
@@ -558,6 +680,14 @@
   </div>
 </section>
 
+<!-- ===== CINTA DE ÁREAS ===== -->
+<div class="cinta" aria-hidden="true">
+  <div class="cinta-pista">
+    <div class="cinta-grupo"><span>Familia y Sucesiones</span><i></i><span class="hueco">Civil y Comercial</span><i></i><span>Laboral</span><i></i><span class="hueco">Penal</span><i></i><span>La Plata · Berisso · Ensenada</span><i></i></div>
+    <div class="cinta-grupo"><span>Familia y Sucesiones</span><i></i><span class="hueco">Civil y Comercial</span><i></i><span>Laboral</span><i></i><span class="hueco">Penal</span><i></i><span>La Plata · Berisso · Ensenada</span><i></i></div>
+  </div>
+</div>
+
 <!-- ===== CÓMO TRABAJAMOS ===== -->
 <section id="proceso">
   <div class="contenedor">
@@ -640,7 +770,7 @@
           <li><a href="#contacto">Contacto</a></li>
         </ul>
       </div>
-      <div>
+      <div class="footer-contacto">
         <h4>Contacto</h4>
         <ul>
           <li><a href="https://wa.me/5492215609064" target="_blank" rel="noopener">221 560-9064</a> <small style="display:block;font-size:.76rem;color:rgba(255,255,255,.42)">Cualquier horario</small></li>
@@ -662,7 +792,8 @@
   <a href="https://wa.me/5492215609064?text=Hola%2C%20quisiera%20realizar%20una%20consulta." target="_blank" rel="noopener"><svg class="i"><use href="#i-wsp"/></svg><span>221 560-9064<small>Cualquier horario</small></span></a>
   <a href="https://wa.me/5492215989986?text=Hola%2C%20quisiera%20realizar%20una%20consulta." target="_blank" rel="noopener"><svg class="i"><use href="#i-wsp"/></svg><span>221 598-9986<small>Lunes a viernes de 8 a 16 h</small></span></a>
 </div>
-<button class="wsp-fijo" id="wspBtn" aria-label="Consultar por WhatsApp" aria-expanded="false"><svg><use href="#i-wsp"/></svg></button>
+<div class="wsp-aviso" id="wspAviso" aria-hidden="true">¿Necesita asesoramiento? <strong>Escríbanos</strong></div>
+<button class="wsp-fijo oculto" id="wspBtn" aria-label="Consultar por WhatsApp" aria-expanded="false" tabindex="-1"><svg><use href="#i-wsp"/></svg></button>
 
 <script>
   const WSP_PRINCIPAL = "5492215609064";
@@ -719,9 +850,99 @@
   });
 
   // WhatsApp fijo
-  const wspBtn = document.getElementById("wspBtn"), wspMenu = document.getElementById("wspMenu");
-  wspBtn.addEventListener("click", () => { wspMenu.hidden = !wspMenu.hidden; wspBtn.setAttribute("aria-expanded", !wspMenu.hidden); });
-  document.addEventListener("click", e => { if (!wspMenu.contains(e.target) && !wspBtn.contains(e.target)) wspMenu.hidden = true; });
+  const wspBtn = document.getElementById("wspBtn"), wspMenu = document.getElementById("wspMenu"), aviso = document.getElementById("wspAviso");
+  const cerrarMenu = () => { wspMenu.hidden = true; wspBtn.setAttribute("aria-expanded", "false"); };
+  wspBtn.addEventListener("click", () => {
+    wspMenu.hidden = !wspMenu.hidden;
+    wspBtn.setAttribute("aria-expanded", !wspMenu.hidden);
+    aviso.classList.remove("mostrar");
+  });
+  document.addEventListener("click", e => { if (!wspMenu.contains(e.target) && !wspBtn.contains(e.target)) cerrarMenu(); });
+
+  // El botón se oculta mientras haya números de WhatsApp a la vista
+  const visibles = new Set();
+  let avisoMostrado = false;
+  const ioWsp = new IntersectionObserver(entradas => {
+    entradas.forEach(en => en.isIntersecting ? visibles.add(en.target) : visibles.delete(en.target));
+    const ocultar = visibles.size > 0;
+    wspBtn.classList.toggle("oculto", ocultar);
+    wspBtn.tabIndex = ocultar ? -1 : 0;
+    wspBtn.setAttribute("aria-hidden", ocultar);
+    if (ocultar) { cerrarMenu(); aviso.classList.remove("mostrar"); return; }
+    if (!avisoMostrado) {
+      avisoMostrado = true;
+      setTimeout(() => { if (!wspBtn.classList.contains("oculto") && wspMenu.hidden) aviso.classList.add("mostrar"); }, 700);
+      setTimeout(() => aviso.classList.remove("mostrar"), 5700);
+    }
+  });
+  document.querySelectorAll(".topbar, .hero-acciones, .hero-horarios, .canales, .footer-contacto").forEach(el => ioWsp.observe(el));
+
+  // ===== Movimiento =====
+  const reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const sinIntro = reducido || document.documentElement.classList.contains("sin-intro");
+
+  // Aparición al hacer scroll (escalonada dentro de cada grupo)
+  const marcar = (selector, tipo = "", paso = 0) => document.querySelectorAll(selector).forEach((el, i) => {
+    el.setAttribute("data-reveal", tipo);
+    if (paso) el.style.setProperty("--d", i * paso + "ms");
+  });
+  marcar(".indice-item", "", 90);
+  marcar(".estudio-visual", "izq");
+  marcar(".estudio-texto > .etiqueta, .estudio-texto > .titulo, .estudio-texto > p", "", 80);
+  marcar(".pilar", "", 110);
+  marcar(".areas-cab > *", "", 120);
+  marcar(".areas-layout", "escala");
+  marcar(".proceso-cab > *", "", 100);
+  marcar(".paso", "", 150);
+  marcar(".zona-texto > *", "", 90);
+  marcar(".ciudades > *", "", 110);
+  marcar(".contacto-grid > div:first-child > *", "", 90);
+  marcar(".canal", "der", 110);
+  marcar(".footer-grid > div", "", 100);
+  document.querySelectorAll(".temas").forEach(l => l.querySelectorAll(".tema").forEach((t, i) => t.style.setProperty("--i", i)));
+
+  const io = new IntersectionObserver(entradas => entradas.forEach(en => {
+    if (en.isIntersecting) { en.target.classList.add("visible"); io.unobserve(en.target); }
+  }), { threshold: .08, rootMargin: "0px 0px -40px 0px" });
+  const pasos = document.querySelector(".pasos");
+  const ioPasos = new IntersectionObserver(([en]) => {
+    if (en.isIntersecting) { pasos.classList.add("en-vista"); ioPasos.disconnect(); }
+  }, { threshold: .4 });
+  setTimeout(() => {
+    document.querySelectorAll("[data-reveal]").forEach(el => io.observe(el));
+    ioPasos.observe(pasos);
+  }, sinIntro ? 0 : 1400);
+  if (!sinIntro) setTimeout(() => document.querySelector(".intro")?.remove(), 2300);
+
+  // Menú: resalta la sección visible
+  const enlaces = [...document.querySelectorAll('.nav-links a[href^="#"]:not(.btn)')];
+  const ioNav = new IntersectionObserver(entradas => entradas.forEach(en => {
+    if (en.isIntersecting) enlaces.forEach(a => a.classList.toggle("activo", a.getAttribute("href") === "#" + en.target.id));
+  }), { rootMargin: "-45% 0px -50% 0px" });
+  ["inicio", "estudio", "areas", "proceso", "contacto"].forEach(id => ioNav.observe(document.getElementById(id)));
+
+  // Barra de progreso y profundidad (paralaje suave)
+  const barra = document.getElementById("progreso");
+  const paralaje = [
+    [document.querySelector(".hero .hero-balanza"), .14],
+    [document.querySelector(".hero-bloque"), -.05],
+    [document.querySelector(".estudio-cita"), -.08],
+    [document.querySelector(".contacto .hero-balanza"), .1]
+  ].filter(([el]) => el);
+  let pendiente = false;
+  const alScroll = () => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    barra.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
+    if (!reducido) paralaje.forEach(([el, f]) => {
+      const r = el.parentElement.getBoundingClientRect();
+      const desvio = r.top + r.height / 2 - innerHeight / 2;
+      el.style.translate = `0 ${(-desvio * f).toFixed(1)}px`;
+    });
+    pendiente = false;
+  };
+  window.addEventListener("scroll", () => { if (!pendiente) { pendiente = true; requestAnimationFrame(alScroll); } }, { passive: true });
+  window.addEventListener("resize", alScroll);
+  alScroll();
 </script>
 </body>
 </html>
