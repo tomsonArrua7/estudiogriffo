@@ -1,0 +1,9 @@
+# Material interno del proyecto (no se publica)
+*.docx
+*.jpeg
+*.jpg
+*.pdf
+
+# Sistema
+Thumbs.db
+.DS_Store
