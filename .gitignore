@@ -1,8 +1,7 @@
 # Material interno del proyecto (no se publica)
 *.docx
-*.jpeg
-*.jpg
 *.pdf
+WhatsApp Image*
 
 # Sistema
 Thumbs.db
